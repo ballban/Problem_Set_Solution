@@ -127,7 +127,21 @@ class Solution:
         _recursion(board, 0, 0, possible_nums_horizontal, possible_nums_vertical, possible_nums_grid)
 
     def solveSudoku3(self, board):
-        nums = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        """
+        Recursion without numpy
+        """
+        nums_horizontal = [set(row) for row in board]
+        nums_vertical = [set(col) for col in zip(*board)]
+        nums_grid = [set() for x in range(9)]
+
+        for i in range(0, 9):
+            for j in range(0, 9):
+                if board[i][j] != '.':
+                    index = i // 3 * 3 + j // 3
+                    nums_grid[index].add(board[i][j])
+
+        _recursion2(board, 0, 0, nums_horizontal, nums_vertical, nums_grid)
+
 
 
 def _recursion(_board, i, j, possible_nums_horizontal, possible_nums_vertical, possible_nums_grid):
@@ -181,8 +195,39 @@ def _recursion(_board, i, j, possible_nums_horizontal, possible_nums_vertical, p
 
         return None
 
-def _recursion2():
-    pass
+
+nums = {'1', '2', '3', '4', '5', '6', '7', '8', '9'}
+def _recursion2(_board, i, j, nums_horizontal, nums_vertical, nums_grid):
+    if i == 9:
+        return True
+    if _board[i][j] != ".":
+        # Continue recursion if number is exist
+        # if j == 8 then go next row, else next col
+        i, j = (i+1, 0) if j == 8 else (i, j+1)
+        return _recursion2(_board, i, j, nums_horizontal, nums_vertical, nums_grid)
+    else:
+        grid_index = i // 3 * 3 + j // 3
+        valid_nums = nums.difference(nums_horizontal[i] | nums_vertical[j] | nums_grid[grid_index])
+
+        if len(valid_nums) == 0:
+            return False
+
+        for valid_num in valid_nums:
+            _board[i][j] = valid_num
+            nums_horizontal[i].add(valid_num)
+            nums_vertical[j].add(valid_num)
+            nums_grid[grid_index].add(valid_num)
+
+            i_next, j_next = (i + 1, 0) if j == 8 else (i, j + 1)
+            if _recursion2(_board, i_next, j_next, nums_horizontal, nums_vertical, nums_grid):
+                return True
+            else:
+                _board[i][j] = '.'
+                nums_horizontal[i].remove(valid_num)
+                nums_vertical[j].remove(valid_num)
+                nums_grid[grid_index].remove(valid_num)
+
+        return False
 
 board_ = [["5", "3", ".", ".", "7", ".", ".", ".", "."],
           ["6", ".", ".", "1", "9", "5", ".", ".", "."],
@@ -204,18 +249,8 @@ board_ = [[".", ".", "9", "7", "4", "8", ".", ".", "."],
           [".", ".", ".", ".", ".", ".", ".", ".", "6"],
           [".", ".", ".", "2", "7", "5", "9", ".", "."]]
 
-board_ = [[".", ".", ".", ".", ".", "7", ".", ".", "9"],
-          [".", "4", ".", ".", "8", "1", "2", ".", "."],
-          [".", ".", ".", "9", ".", ".", ".", "1", "."],
-          [".", ".", "5", "3", ".", ".", ".", "7", "2"],
-          ["2", "9", "3", ".", ".", ".", ".", "5", "."],
-          [".", ".", ".", ".", ".", "5", "3", ".", "."],
-          ["8", ".", ".", ".", "2", "3", ".", ".", "."],
-          ["7", ".", ".", ".", "5", ".", ".", "4", "."],
-          ["5", "3", "1", ".", "7", ".", ".", ".", "."]]
-
 s = Solution()
-s.solveSudoku(board_)
+s.solveSudoku3(board_)
 print("answer:")
 for x in board_:
     print("\t".join(x))

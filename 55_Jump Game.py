@@ -20,6 +20,7 @@ class Solution:
 #         else:
 #             i_base = i
 #             return _recursion(nums, i_base - 1, i_base)
+
     def canJump(self, nums: List[int]) -> bool:
         step = 0
         for i in range(len(nums)):

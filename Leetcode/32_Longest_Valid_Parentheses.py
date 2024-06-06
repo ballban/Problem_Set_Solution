@@ -213,6 +213,27 @@ class Solution:
 
         return max(dp)
 
+    def a(self, s: str) -> int:
+        if len(s) < 2:
+            return 0
+        max_num = 0
+        temp_max = 0
+        stack = ''
+        for c in s:
+            if c == '(':
+                stack += c
+            else:
+                if len(stack) > 0 and stack[-1] == '(':
+                    temp_max += 2
+                    stack = stack[:-1]
+                    if len(stack) == 0:
+                        max_num = temp_max if temp_max > max_num else max_num
+                        temp_max = 0
+                elif temp_max > 0:
+                    max_num = temp_max if temp_max > max_num else max_num
+                    temp_max = 0
+        return max(max_num, temp_max)
+                    
 
 s = ["("]  # 0
 s += ["()"]  # 2
@@ -232,5 +253,5 @@ s += ["((()()(()((()"]  # 4
 
 so = Solution()
 for k in s:
-    print(so.longestValidParentheses(k))
+    print(so.a(k))
 

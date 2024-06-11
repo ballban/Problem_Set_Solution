@@ -3,17 +3,16 @@ from collections import defaultdict
 
 class Solution:
     def relativeSortArray(self, arr1: List[int], arr2: List[int]) -> List[int]:
-        dic = defaultdict(int)
+        frequency_map = defaultdict(int)
         for n in arr1:
-            dic[n] += 1
+            frequency_map[n] += 1
         
         result = []
         for n in arr2:
-            count = dic.pop(n)
-            result +=  [n] * count
+            result.extend([n] * frequency_map.pop(n))
         
-        sorted_lst = sorted([k for k, v in dic.items()])
-        for n in sorted_lst:
-            result += [n] * dic[n]
+        remaining_elements = sorted(frequency_map.items())
+        for n, c in remaining_elements:
+            result.extend([n] * c)
 
         return result
